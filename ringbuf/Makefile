@@ -1,3 +1,6 @@
 all:
-	gcc ringbuf.c test.c  -o app
+	gcc -g ringbuf.c test.c  -o app
+
+clean:
+	rm ./app
 

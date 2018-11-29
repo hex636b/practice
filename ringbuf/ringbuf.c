@@ -41,7 +41,7 @@ int write_ringbuf(ringbuf_t * rb, void *data, unsigned long count)
 	unsigned long tail = (rb->head + rb->length) % rb->capacity;
 	if(rb->capacity - tail   >= count ){
 		memcpy(rb->addr + tail , data, count);
-		MLOGD("copying: head %lu, length %lu, tail %lu count %lu\n", 
+		MLOGD("writing: head %lu, length %lu, tail %lu count %lu\n", 
 			rb->head, rb->length, tail, count);
 	}
 	else{
@@ -51,14 +51,48 @@ int write_ringbuf(ringbuf_t * rb, void *data, unsigned long count)
 		memcpy(rb->addr+tail, data, first_size);
 		memcpy(rb->addr, data + first_size, second_size );
 
-		MLOGD("copying: head %lu, length %lu, tail %lu "
+		MLOGD("writing: head %lu, length %lu, tail %lu "
 			"count %lu, first %lu, second %lu\n", 
 			rb->head, rb->length, tail, count, first_size, second_size);
 	}
 
 	rb->length += count;
-	MLOGD("write over: head %lu, length %lu\n", rb->head, rb->length);
+	MLOGD("##write over: head %lu, length %lu, tail %lu\n\n", rb->head, rb->length,
+		(rb->head + rb->length) % rb->capacity);
 }
 
-int read_ringbuf(ringbuf_t * rb, void *buf, unsigned long count);
+int read_ringbuf(ringbuf_t * rb, void *buf, unsigned long count)
+{
+	if( 0 == rb->length ){
+		MLOGD("empty ringbuf\n");
+		return -1;
+	}
+
+	if(rb->length < count){
+		MLOGD("not enough data\n");
+		return -1;
+	}
+
+	unsigned long tail = (rb->head + rb->length) % rb->capacity;
+	if( rb->capacity - tail >= count ){
+		memcpy(buf, rb->addr + rb->head,  count);
+		MLOGD("reading: head %lu, length %lu, tail %lu count %lu\n", 
+			rb->head, rb->length, tail, count);
+	}
+	else{
+		unsigned long first_size = rb->capacity - tail;
+		unsigned long second_size = count - first_size;
+
+		memcpy(buf, rb->addr + rb->head, first_size);
+		memcpy(buf+first_size, rb->addr, second_size);	
+		MLOGD("reading: head %lu, length %lu, tail %lu "
+			"count %lu, first %lu, second %lu\n", 
+			rb->head, rb->length, tail, count, first_size, second_size);
+	}
+	rb->head = (rb->head + count) % rb->capacity;
+	rb->length -= count;
+	MLOGD("@@ read over: head %lu, length %lu, tail %lu\n\n", rb->head, rb->length, 
+		(rb->head + rb->length) % rb->capacity);
+
+}
 

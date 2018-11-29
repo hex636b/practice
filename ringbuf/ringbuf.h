@@ -1,7 +1,7 @@
 #ifndef __SIMPLE_RINGBUF_H__
 #define __SIMPLE_RINGBUF_H__
 
-#define MLOGD(fmt, arg...) printf("%s:%u >> " fmt, __FUNCTION__, __LINE__, ##arg)
+#define MLOGD(fmt, arg...) printf("%s:%u  " fmt, __FUNCTION__, __LINE__, ##arg)
 
 typedef struct {
 	unsigned long capacity;
