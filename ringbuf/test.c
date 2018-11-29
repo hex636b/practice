@@ -11,7 +11,7 @@ int main(int argc, char * argv[])
 
 
 	int i = 0;
-	for(; i<20; i++){
+	for(; i<10000; i++){
 		write_ringbuf(rb, data, sizeof(data));
 		read_ringbuf(rb, buffer, sizeof(buffer));
 		MLOGD("%s\n\n", buffer);
