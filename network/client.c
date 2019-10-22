@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	inet_aton("127.0.0.1", &addr.sin_addr);
 
  	while (1) {
-		sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+		sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_IP);
 		if (sockfd < 0) {
 			printf("socket %s\n", strerror(errno));
 			goto fail;
